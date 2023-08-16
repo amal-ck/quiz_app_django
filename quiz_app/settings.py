@@ -41,6 +41,7 @@ INSTALLED_APPS = [
     'quiz_user',
     'crispy_forms',
     'crispy_bootstrap5',
+    'quiz_master'
 ]
 
 CRISPY_ALLOWED_TEMPLATE_PACKS = "bootstrap5"
@@ -63,6 +64,7 @@ TEMPLATES = [
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
         'DIRS': [
             os.path.join(BASE_DIR, 'quiz_user', 'templates'),
+            os.path.join(BASE_DIR, 'quiz_master', 'templates')
         ],
         'APP_DIRS': True,
         'OPTIONS': {

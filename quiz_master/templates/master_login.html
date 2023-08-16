@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+{% load crispy_forms_tags %}
+{% block title %}
+master Login
+{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="row">
+        <div class="col">
+            <div class="d-flex justify-content-center">
+                <div class="p-4">
+                    <h2 class="text-center mb-5">Login to Your Account</h2>
+                    <form method="post" action="{% url 'master_login' %}">
+                        {% csrf_token %}
+                        {{ form|crispy }}
+                        <div class="d-flex justify-content-center mt-5">
+                            <button type="submit" class="btn btn-success text-center">LOGIN</button>
+                        </div>
+                    </form>
+                    <p class="text-center mt-3">You don't have an account? <a href="{% url 'master_register' %}">SignUp</a></p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock%}
