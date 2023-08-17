@@ -1,8 +1,7 @@
 from django import forms
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth import get_user_model
-from crispy_forms.helper import FormHelper
-from crispy_forms.layout import Submit
+from .models import QuizModel
 
 User = get_user_model()
 
@@ -17,3 +16,8 @@ class MasterLoginForm(forms.Form):
     username = forms.CharField(max_length=30)
     password = forms.CharField(widget=forms.PasswordInput)
     remember_me = forms.BooleanField(required=False)
+
+class QuizForm(forms.ModelForm):
+    class Meta:
+        model = QuizModel
+        fields = '__all__'

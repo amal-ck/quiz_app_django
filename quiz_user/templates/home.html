@@ -1,2 +1,20 @@
-<h1>Welcome</h1>
-<a href="{% url 'logout' %}">Logout</a>
+{% extends 'base.html'%}
+{% block title %} Home {% endblock%}
+
+{% block content %}
+
+    <div class="text-light container bg-green">
+        <h3 class="mt-4 mb-5">Welcome {{user}}</h3>
+        <h2 class="text-center mt-5">DJANGO QUIZ</h2>
+        <div class="w-50 mx-auto d-flex justify-content-center mt-5 row">
+            <p class="description text-green">
+                Django is a high-level Python web framework that enables rapid development of secure and maintainable websites.
+                Built by experienced developers, Django takes care of much of the hassle of web development, so you can focus
+                on writing your app without needing to reinvent the wheel.
+            </p>
+            <a href="{% url 'quiz' %}" class="btn btn-warning text-light w-50 mt-5">START QUIZ<i class="bi bi-caret-right ml-5"></i></a>
+    
+        </div>
+    </div>
+
+{% endblock %}

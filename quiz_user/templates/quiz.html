@@ -1,0 +1,70 @@
+{% extends 'base.html' %}
+{% block title %} Quiz {% endblock %}
+{% block content %}
+<div class="container">
+    <div class="justify-content-center">
+        {% if question %}
+        <div class="text-center mt-5 text-success">
+            <h3>Question {{ question_index|add:1 }}:</h3>
+            <h4>{{ question.question }}</h4>
+        </div>
+        <div class="text-center mt-5">
+            {% if error_message %}
+                <div class="alert alert-danger">{{ error_message }}</div>
+           {% endif %}
+            <form method="post" action="{% url 'next_question' %}">
+                {% csrf_token %}
+                <ul class="list-unstyled">
+                    <li class="quiz-option">
+                        <label class="btn btn-success w-50 custom-btn">
+                            <input type="radio" name="selected_choice" value="{{ question.op1 }}">
+                            {{ question.op1 }}
+                        </label>
+                    </li>
+                    <li class="quiz-option">
+                        <label class="btn btn-success w-50 mt-2 custom-btn">
+                            <input type="radio" name="selected_choice" value="{{ question.op2 }}">
+                            {{ question.op2 }}
+                        </label>
+                    </li>
+                    <li class="quiz-option">
+                        <label class="btn btn-success w-50 mt-2 custom-btn">
+                            <input type="radio" name="selected_choice" value="{{ question.op3 }}">
+                            {{ question.op3 }}
+                        </label>
+                    </li>
+                    <li class="quiz-option">
+                        <label class="btn btn-success w-50 mt-2 custom-btn">
+                            <input type="radio" name="selected_choice" value="{{ question.op4 }}">
+                            {{ question.op4 }}
+                        </label>
+                    </li>
+                </ul>
+                {% if question_index < total_questions|add:'-1' %}
+                    <input type="submit" class="btn btn-info" value="Next Question">
+                {% else %}
+                    <input type="submit" class="btn btn-success" value="Submit">
+                {% endif %}
+            </form>
+            <form method="get" action="{% url 'restart_quiz' %}">
+                <button type="submit" class="btn btn-danger mt-4">Clear Data & Start Again</button>
+            </form>
+        </div>
+        
+        
+    {% else %}
+    <div class="d-flex flex-column align-items-center mt-5">
+        <h5 class="text-success">You Already Completed The Quiz !</h5>
+        <div class="mt-3">
+            <form method="get" action="{% url 'restart_quiz' %}">
+                <button type="submit" class="btn btn-danger">Clear Data & Start Again</button>
+            </form>
+        </div>
+    </div>
+    
+    {% endif %}
+    </div>
+
+</div>
+   
+{% endblock %}

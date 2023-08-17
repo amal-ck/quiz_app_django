@@ -1,5 +1,31 @@
 {% extends "base.html" %}
 {% block title %} Dash Bord {% endblock %}
 {% block content %}
-<h1>master</h1>
+<div class="container">
+    <h2 class="text-center p-3">Welcome to the Dashboard</h2>
+    {% if questions %}
+      <table class="table table-success table-striped">
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>Question</th>
+            <th>Edit</th>
+            <th>Delete</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for question in questions %}
+            <tr>
+              <td>{{ forloop.counter }}</td>
+              <td>{{ question.question }}</td>
+              <td><a href="{% url 'edit_question' question.pk %}" class="btn btn-info">Edit</a></td>
+              <td><a href="{% url 'delete_question' question.pk %}"class="btn btn-danger">Delete</a></td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    {% else %}
+      <p>No questions available.</p>
+    {% endif %}
+</div>
 {% endblock %}
