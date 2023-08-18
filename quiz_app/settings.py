@@ -41,7 +41,7 @@ INSTALLED_APPS = [
     'quiz_user',
     'crispy_forms',
     'crispy_bootstrap5',
-    'quiz_master'
+    'quiz_master',
 ]
 
 CRISPY_ALLOWED_TEMPLATE_PACKS = "bootstrap5"

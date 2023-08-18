@@ -10,3 +10,7 @@ class QuizModel(models.Model):
     
     def __str__(self):
         return self.question
+class quiz(models.Model):
+    quiz_name = models.CharField(max_length=200)
+    quiz_desc = models.TextField
+    

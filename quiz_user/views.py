@@ -4,6 +4,8 @@ from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import Group
 from quiz_master.models import QuizModel
+import  datetime
+from django.http import JsonResponse
 
 def user_register(request):
     if request.method == 'POST':
@@ -55,6 +57,23 @@ def home(request):
 def quiz(request):
     if request.user.groups.filter(name='users').exists():
         question_index = request.session.get('question_index', 0)
+        if 'start_time' not in request.session:
+            request.session['start_time'] = str(datetime.datetime.now())
+
+        start_time = datetime.datetime.strptime(request.session['start_time'], '%Y-%m-%d %H:%M:%S.%f')
+        current_time = datetime.datetime.now()
+        time_elapsed = current_time - start_time
+
+        countdown_seconds = 30  
+
+        if time_elapsed.total_seconds() < countdown_seconds:
+            time_remaining = countdown_seconds - time_elapsed.total_seconds()
+            minutes = int(time_remaining // 60)
+            seconds = int(time_remaining % 60)
+            time_remaining_display = f'{minutes}:{seconds:02}'
+        else:
+            time_remaining_display = '0:00'
+
         try:
             question = QuizModel.objects.all()[question_index]
         except IndexError:
@@ -66,8 +85,12 @@ def quiz(request):
             'question': question,
             'question_index': question_index,
             'total_questions': total_questions,
-            'show_navbar': True
+            'show_navbar': True,
+            'time_remaining':time_remaining_display
         }
+        if request.META.get('HTTP_X_REQUESTED_WITH') == 'XMLHttpRequest':
+             return JsonResponse({'time_remaining': time_remaining_display})
+        
         return render(request, 'quiz.html', context)
 
 @login_required
@@ -75,13 +98,10 @@ def next_question(request):
     if request.method == 'POST' and request.user.groups.filter(name='users').exists():
         question_index = request.session.get('question_index', 0)
         selected_choice = request.POST.get('selected_choice')
-
-        # Get the current question
         try:
             question = QuizModel.objects.all()[question_index]
         except IndexError:
             question = None
-        # Check the answer and update user's progress
         if question and selected_choice == question.ans:
             request.session.setdefault('correct_count', 0)
             request.session['correct_count'] += 1
@@ -94,8 +114,10 @@ def next_question(request):
 
         if question_index < QuizModel.objects.count():
             return redirect('quiz')
-        else:
-            return redirect('quiz_results')
+        else: 
+            if 'end_time' not in request.session:
+               request.session['end_time'] = str(datetime.datetime.now())
+        return redirect('quiz_results')
     
     return redirect('quiz')
 
@@ -106,22 +128,38 @@ def quiz_results(request):
         incorrect_count = request.session.get('incorrect_count', 0)
         total_questions = QuizModel.objects.count()
         answered_questions = request.session.get('question_index', 0) + 1
+        
 
         if answered_questions < total_questions and answered_questions != 1 :
             return redirect('quiz')
+        if answered_questions != 1:
+                start_time_str = request.session.get('start_time')
+                start_time = datetime.datetime.strptime(start_time_str, '%Y-%m-%d %H:%M:%S.%f')
+                end_time_str = request.session.get('end_time')
+                end_time = datetime.datetime.strptime(end_time_str, '%Y-%m-%d %H:%M:%S.%f')
+                time_taken = end_time - start_time
+                total_seconds = time_taken.total_seconds()
+                minutes = int(total_seconds // 60)
+                seconds = int(total_seconds % 60)
+        else:
+                minutes = seconds = 0 
 
         context = {
             'correct_count': correct_count,
             'incorrect_count': incorrect_count,
             'total_questions': total_questions,
-            'show_navbar': True
+            'show_navbar': True,
+            'minutes':minutes,
+            'seconds':seconds
         }
         return render(request, 'result.html', context)
     
 @login_required
 def restart_quiz(request):
-    request.session.pop('question_index', None)  # Remove the question_index session variable
-    request.session.pop('correct_count', None)   # Remove the correct_count session variable
+    request.session.pop('question_index', None)  # Remove session variable
+    request.session.pop('correct_count', None)   
     request.session.pop('incorrect_count', None)
     request.session.pop('answered_questions', None)
+    request.session.pop('start_time', None)
+    request.session.pop('end_time', None)
     return redirect('quiz')
