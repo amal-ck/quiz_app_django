@@ -1,9 +1,11 @@
 from django.shortcuts import render, redirect, get_object_or_404
-from .forms import MasterRegistrationForm, MasterLoginForm, QuizForm
+from .forms import MasterRegistrationForm, MasterLoginForm, QuizForm, QuestionForm  
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import Group
-from .models import QuizModel
+from .models import QuizModel, QuestionModel
+from django.urls import reverse
+from django.db.models import Count
 
 def master_register(request):
     if request.method == 'POST':
@@ -44,8 +46,9 @@ def master_logout(request):
 @login_required(login_url='master_login')
 def dash(request):
     if request.user.groups.filter(name='masters').exists():
+        quizzes = QuizModel.objects.annotate(total_questions=Count('questionmodel'))
         context = {
-            'questions' : QuizModel.objects.all(),
+            'quiz_list' : quizzes,
             'show_navbar' : True,
             'master' : True
         }
@@ -54,17 +57,21 @@ def dash(request):
         return redirect('master_login')
 
 @login_required
-def add_question(request):
+def add_question(request,quiz_id):
     if request.user.groups.filter(name='masters').exists():
+       quiz = get_object_or_404(QuizModel, pk=quiz_id)
        if request.method == 'POST':
-           form = QuizForm(request.POST)
+           form = QuestionForm(request.POST)
            if form.is_valid():
                form.save()
-               return redirect('dash')
+               return redirect(reverse('edit_quiz', args=[quiz_id]))
        else:
+           initial_data = {'quiz': quiz}
+           form = QuestionForm(initial=initial_data)
            
            context = {
-               'form' : QuizForm(),
+               'form' : form,
+               'quiz_id':quiz_id,
                'show_navbar' : True,
                'master':True
            }
@@ -76,17 +83,17 @@ def add_question(request):
 @login_required
 def edit_question(request, question_id):
     if request.user.groups.filter(name='masters').exists():
-       question = get_object_or_404(QuizModel, pk=question_id)
+       question = get_object_or_404(QuestionModel, pk=question_id)
    
        if request.method == 'POST':
-           form = QuizForm(request.POST, instance=question)
+           form = QuestionForm(request.POST, instance=question)
            if form.is_valid():
                form.save()
-               return redirect('dash')
+               return redirect(reverse('edit_quiz', args=[question.quiz_id]))
    
        else:
            context = {
-               'form' : QuizForm(instance=question),
+               'form' : QuestionForm(instance=question),
                'show_navbar' : True,
                'question_id' : question_id,
                'master':True
@@ -99,8 +106,60 @@ def edit_question(request, question_id):
 @login_required
 def remove_question(request,question_id):
     if request.user.groups.filter(name='masters').exists():
-        question = QuizModel.objects.get(pk = question_id)
+        question = QuestionModel.objects.get(pk = question_id)
         question.delete()
+        return redirect(reverse('edit_quiz', args=[question.quiz_id]))
+    else:
+        return redirect('master_login')
+@login_required    
+def add_quiz(request):
+    if request.user.groups.filter(name='masters').exists():
+        context = {
+            'show_navbar': True,
+            'master': True
+        }
+        if request.method == 'POST':
+            form = QuizForm(request.POST)
+            if form.is_valid():
+                form.save()
+                print("Form is valid, redirecting to dash")
+                return redirect('dash')
+        else:
+            context['form'] = QuizForm()
+
+        return render(request, 'add_quiz.html', context)
+    else:
+        return redirect('master_login')
+@login_required
+def edit_quiz(request, quiz_id):
+    if request.user.groups.filter(name='masters').exists():
+       quiz = get_object_or_404(QuizModel, pk=quiz_id)
+   
+       if request.method == 'POST':
+           form = QuizForm(request.POST, instance=quiz)
+           if form.is_valid():
+               form.save()
+               return redirect('dash')
+   
+       else:
+           question = QuestionModel.objects.filter(quiz_id = quiz_id)
+           context = {
+               'form' : QuizForm(instance=quiz),
+               'questions' : question,
+               'show_navbar' : True,
+               'quiz_id' : quiz_id,
+               'master':True
+           }
+   
+       return render(request, 'edit_quiz.html', context)
+    else:
+        return redirect('master_login')
+    
+@login_required
+def remove_quiz(request,quiz_id):
+    if request.user.groups.filter(name='masters').exists():
+        quiz = QuizModel.objects.get(pk = quiz_id)
+        quiz.delete()
         return redirect('dash')
     else:
         return redirect('master_login')

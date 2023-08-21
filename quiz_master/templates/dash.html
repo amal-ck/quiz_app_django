@@ -3,29 +3,31 @@
 {% block content %}
 <div class="container">
     <h2 class="text-center p-3">Welcome to the Dashboard</h2>
-    {% if questions %}
+    {% if quiz_list %}
       <table class="table table-success table-striped">
         <thead>
           <tr>
             <th>#</th>
-            <th>Question</th>
+            <th>Quiz</th>
+            <th>No of Question</th>
             <th>Edit</th>
             <th>Delete</th>
           </tr>
         </thead>
         <tbody>
-          {% for question in questions %}
+          {% for quiz in quiz_list %}
             <tr>
               <td>{{ forloop.counter }}</td>
-              <td>{{ question.question }}</td>
-              <td><a href="{% url 'edit_question' question.pk %}" class="btn btn-info">Edit</a></td>
-              <td><a href="{% url 'delete_question' question.pk %}"class="btn btn-danger">Delete</a></td>
+              <td>{{ quiz.quiz_name }}</td>
+              <td>{{ quiz.total_questions }}</td>
+              <td><a href="{% url 'edit_quiz' quiz.pk %}" class="btn btn-info">Edit</a></td>
+              <td><a href="{% url 'delete_quiz' quiz.pk %}"class="btn btn-danger">Delete</a></td>
             </tr>
           {% endfor %}
         </tbody>
       </table>
     {% else %}
-      <p>No questions available.</p>
+      <p>No quiz available.</p>
     {% endif %}
 </div>
 {% endblock %}

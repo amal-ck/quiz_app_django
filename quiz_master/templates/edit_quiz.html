@@ -1,0 +1,52 @@
+{% extends 'base.html' %}
+{% load crispy_forms_tags %}
+{% block title %} Edit Quiz {% endblock %}
+
+{% block content %}
+<div class="container mt-2">
+    <div class="row">
+        <div class="col-lg-6">
+                <div class="p-4">
+                    <h2 class="text-center mb-3">Edit Quiz</h2>
+                    <form method="post" action="{% url 'edit_quiz' quiz_id=quiz_id %}">
+                        {% csrf_token %}
+                        {{ form|crispy }}
+                        <div class="d-flex justify-content-center">
+                            <button type="submit" class="btn btn-success text-center w-50">UPDATE</button>
+                        </div>
+                    </form>
+                </div>
+        </div>
+        <div class="col-lg-6">
+            <div class="d-flex justify-content-end">
+                <a href="{% url 'add_question' quiz_id %}" class="btn btn-info">Add Question</a>
+              </div>              
+            <h2 class="text-center p-3">Questions</h2>
+            {% if questions %}
+            <table class="table table-success table-striped">
+                <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>Question</th>
+                        <th>Edit</th>
+                        <th>Delete</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for question in questions %}
+                    <tr>
+                        <td>{{ forloop.counter }}</td>
+                        <td>{{ question.question }}</td>
+                        <td><a href="{% url 'edit_question' question.pk %}" class="btn btn-info">Edit</a></td>
+                        <td><a href="{% url 'delete_question' question.pk %}" class="btn btn-danger">Delete</a></td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            {% else %}
+            <p>No question available.</p>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock%}
