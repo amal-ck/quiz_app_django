@@ -4,6 +4,9 @@
 <div class="container">
     <div class="justify-content-center">
         {% if question %}
+        <div id="countdownTimer" class="text-center mt-3">
+            Time remaining: <span id="timeRemaining">{{ time }}</span> seconds
+        </div>    
         <div class="text-center mt-5 text-success">
             <h3>Question {{ question_index|add:1 }}:</h3>
             <h4>{{ question.question }}</h4>
@@ -12,7 +15,7 @@
             {% if error_message %}
                 <div class="alert alert-danger">{{ error_message }}</div>
            {% endif %}
-            <form method="post" action="{% url 'next_question' %}">
+            <form method="post" action="{% url 'next_question' quiz_id=quiz_id %}">
                 {% csrf_token %}
                 <ul class="list-unstyled">
                     <li class="quiz-option">
@@ -50,14 +53,38 @@
         </div>
     {% else %}
     <div class="d-flex flex-column align-items-center mt-5">
-        <h5 class="text-success">You Already Completed The Quiz !</h5>
-        <div class="mt-3">
-            <a href="{% url 'restart_quiz' %}" class="btn btn-danger">Clear Data & Restart Exam</a>
-        </div>
+        <h5 class="text-success">No Question Available</h5>
     </div>
     
     {% endif %}
     </div>
 
 </div>
+<script>
+    
+function startCountdown(quizEndTime) {
+    var countdownElement = document.getElementById('countdownTimer');
+    
+    function updateCountdown() {
+        var now = new Date();
+        var timeRemaining = Math.max(Math.floor((quizEndTime - now) / 1000), 0);
+
+        if (timeRemaining > 0) {
+            countdownElement.innerHTML = 'Time remaining: ' + timeRemaining + ' seconds';
+        } else {
+            clearInterval(countdownInterval);
+            countdownElement.innerHTML = "Time's up!";
+            document.querySelector('form').submit();
+        }
+    }
+
+    updateCountdown();
+    var countdownInterval = setInterval(updateCountdown, 1000);
+}
+document.addEventListener('DOMContentLoaded', function () {
+    var quizEndTime = new Date("{{ quiz_end_time|date:'Y-m-d H:i:s' }}");
+    startCountdown(quizEndTime);
+});
+
+</script>
 {% endblock %}

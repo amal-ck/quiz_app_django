@@ -2,19 +2,41 @@
 {% block title %} Home {% endblock%}
 
 {% block content %}
-
-    <div class="text-light container bg-green">
-        <h3 class="mt-4 mb-5">Welcome {{user}}</h3>
-        <h2 class="text-center mt-5">DJANGO QUIZ</h2>
-        <div class="w-50 mx-auto d-flex justify-content-center mt-5 row">
-            <p class="description text-green">
-                Django is a high-level Python web framework that enables rapid development of secure and maintainable websites.
-                Built by experienced developers, Django takes care of much of the hassle of web development, so you can focus
-                on writing your app without needing to reinvent the wheel.
-            </p>
-            <a href="{% url 'quiz' %}" class="btn btn-warning text-light w-50 mt-5">START QUIZ<i class="bi bi-caret-right ml-5"></i></a>
-    
+{% if quizzes %}
+<div class="overlay" id="overlay"></div>
+<div class="text-light container bg-green">
+    <h3 class="mt-4 mb-5">Welcome {{ user }}</h3>
+    <h2 class="text-center mt-5">AVAILABLE QUIZ</h2>
+    <div class="mt-5 row text-dark">
+        {% for quiz in quizzes %}
+        <div class="col-lg-4 mb-1">
+            <div class="card border-success">
+                <div class="card-body text-center">
+                    <h5 class="card-title text-success">{{ quiz.quiz_name }}</h5>
+                    <hr>
+                    <p class="card-text">{{ quiz.quiz_desc }}</p>
+                    <button class="btn btn-warning text-light w-50 mt-5 show-data"
+                    data-quiz-id="{{ quiz.pk }}"
+                    data-quiz-name="{{ quiz.quiz_name }}"
+                    data-quiz-time="{{ quiz.time }}"
+                    data-quiz-total-qn="{{ quiz.total_questions}}">SEE DETAILS<i
+                        class="bi bi-caret-right ml-5"></i></button>
+                </div>
+            </div>
         </div>
+        {% endfor %}
     </div>
-
+    {% else %}
+    <h3>No quizzes Available</h3>
+    {% endif %}
+</div>
+<div id="quizPopup" class="popup bg-dark text-light text-center p-3">
+    <div class="popup-content">
+        <h2 id="popupQuizName"></h2>
+        <hr>
+        <p id="popupQuizDetails"></p>
+        <a class="btn btn-light" id="closePopupBtn">Close</a>
+        <a href="" class="btn btn-warning text-light" id="startQuizBtn">Start Quiz</a>
+    </div>
+</div>
 {% endblock %}

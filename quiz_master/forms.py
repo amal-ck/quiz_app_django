@@ -18,7 +18,6 @@ class MasterLoginForm(forms.Form):
     remember_me = forms.BooleanField(required=False)
 
 class QuizForm(forms.ModelForm):
-    time = forms.TimeField(initial='01:00')
     class Meta:
         model = QuizModel
         fields = '__all__'

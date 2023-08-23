@@ -3,7 +3,7 @@ from django.db import models
 class QuizModel(models.Model):
     quiz_name = models.CharField(max_length=200,null=True)
     quiz_desc = models.TextField(null=True)
-    time = models.TimeField(null=True)
+    time = models.IntegerField(help_text="Duration of the quiz in seconds", default="1")
     
 class QuestionModel(models.Model):
     quiz = models.ForeignKey(QuizModel, on_delete=models.CASCADE)
