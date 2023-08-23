@@ -12,9 +12,6 @@
             <h4>{{ question.question }}</h4>
         </div>
         <div class="text-center mt-5">
-            {% if error_message %}
-                <div class="alert alert-danger">{{ error_message }}</div>
-           {% endif %}
             <form method="post" action="{% url 'next_question' quiz_id=quiz_id %}">
                 {% csrf_token %}
                 <ul class="list-unstyled">
@@ -49,7 +46,6 @@
                     <input type="submit" class="btn btn-success" value="Submit">
                 {% endif %}
             </form>
-            <a href="{% url 'restart_quiz' %}" class="btn btn-danger mt-3">Clear Data & Restart Exam</a>
         </div>
     {% else %}
     <div class="d-flex flex-column align-items-center mt-5">

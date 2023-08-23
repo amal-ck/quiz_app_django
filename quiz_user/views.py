@@ -80,7 +80,6 @@ def quiz(request,quiz_id):
             'total_questions':total_questions,
             'question': question,
             'question_index': question_index,
-            'show_navbar': True,
             'quiz_id':quiz_id,
             'time': time,
             'quiz_end_time': quiz_end_time,
@@ -168,13 +167,3 @@ def quiz_results(request):
             'results': formatted_results
         }
         return render(request, 'result.html', context)
-    
-@login_required
-def restart_quiz(request):
-    request.session.pop('question_index', None)  # Remove session variable
-    request.session.pop('correct_count', None)   
-    request.session.pop('incorrect_count', None)
-    request.session.pop('answered_questions', None)
-    request.session.pop('start_time', None)
-    request.session.pop('end_time', None)
-    return redirect('quiz')
