@@ -87,10 +87,10 @@ WSGI_APPLICATION = 'quiz_app.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'quizdb',
-        'USER': 'root',
-        'PASSWORD': 'root',
-        'HOST':'localhost',
+        'NAME': 'amalck101$quizdb',
+        'USER': 'amalck101',
+        'PASSWORD': 'amalckmysql',
+        'HOST':'amalck101.mysql.pythonanywhere-services.com',
         'PORT':'3306',
     }
 }
